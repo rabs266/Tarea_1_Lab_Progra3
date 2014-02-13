@@ -1,0 +1,7 @@
+# depslib dependency file v1.0
+1391191692 source:/home/alexander/Projects/CodeBlocks/TareaLab_1/main.cpp
+	<iostream>
+	"SDL/SDL.h"
+	"SDL/SDL_image.h"
+	"SDL/SDL_ttf.h"
+

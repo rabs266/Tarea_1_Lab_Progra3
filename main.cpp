@@ -1,0 +1,224 @@
+#include <iostream>
+#include "SDL/SDL.h"
+#include "SDL/SDL_image.h"
+#include "SDL/SDL_ttf.h"
+
+using namespace std;
+
+const int SCREEN_WIDTH = 1000;
+const int SCREEN_HEIGHT = 600;
+const int SCREEN_BPP = 32;
+
+SDL_Surface *screen = NULL;
+
+SDL_Event event;
+
+//Cargar la imagen
+SDL_Surface *load_image( std::string filename )
+{
+    return IMG_Load(filename.c_str());
+}
+
+//Aplicando la superficie
+void apply_surface( int x, int y, SDL_Surface* source, SDL_Surface* destination )
+{
+    SDL_Rect offset;
+    offset.x = x;
+    offset.y = y;
+    SDL_BlitSurface( source, NULL, destination, &offset );
+}
+
+//Inicializar
+bool init()
+{
+    if( SDL_Init( SDL_INIT_EVERYTHING ) == -1 )
+    {
+        return false;
+    }
+    screen = SDL_SetVideoMode( SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_BPP, SDL_SWSURFACE );
+
+    if( screen == NULL )
+    {
+        return false;
+    }
+
+    SDL_WM_SetCaption( "PNG test", NULL );
+
+    return true;
+}
+
+void clean_up()
+{
+    SDL_Quit();
+}
+
+int main()
+{
+       if( init() == false )
+    {
+        return 1;
+    }
+
+    //Cargando el fondo
+    SDL_Surface* image = load_image( "Personaje/background.png" );
+
+    //Arreglo para cargar las imagenes
+    SDL_Surface* stand[2];
+    stand[0] = load_image( "Personaje/WalkingRigth01.png");
+    stand[1] = load_image( "Personaje/WalkingLeft01.png" );
+    stand[2] = load_image( "Personaje/WalkingDown01.png" );
+    stand[3] = load_image( "Personaje/WalkingUp01.png" );
+
+    SDL_Surface* walkrigth[4];
+    walkrigth[0] = load_image( "Personaje/WalkingRigth01.png" );
+    walkrigth[1] = load_image( "Personaje/WalkingRigth02.png" );
+    walkrigth[2] = load_image( "Personaje/WalkingRigth03.png" );
+    walkrigth[3] = load_image( "Personaje/WalkingRigth04.png" );
+
+    SDL_Surface* walkleft[4];
+    walkleft[0] = load_image( "Personaje/WalkingLeft01.png" );
+    walkleft[1] = load_image( "Personaje/WalkingLeft02.png" );
+    walkleft[2] = load_image( "Personaje/WalkingLeft03.png" );
+    walkleft[3] = load_image( "Personaje/WalkingLeft04.png" );
+
+    SDL_Surface* walkdown[4];
+    walkdown[0] = load_image( "Personaje/WalkingDown01.png");
+    walkdown[1] = load_image( "Personaje/WalkingDown02.png");
+    walkdown[2] = load_image( "Personaje/WalkingDown03.png");
+    walkdown[3] = load_image( "Personaje/WalkingDown04.png");
+
+    SDL_Surface* walkup[4];
+    walkup[0] = load_image( "Personaje/WalkingUp01.png");
+    walkup[1] = load_image( "Personaje/WalkingUp02.png");
+    walkup[2] = load_image( "Personaje/WalkingUp03.png");
+    walkup[3] = load_image( "Personaje/WalkingUp04.png");
+
+    SDL_Surface* attack[14];
+    attack[0] = load_image( "Personaje/Battle01.png");
+    attack[1] = load_image( "Personaje/Battle02.png");
+    attack[2] = load_image( "Personaje/Battle03.png");
+    attack[3] = load_image( "Personaje/Battle04.png");
+    attack[4] = load_image( "Personaje/Battle05.png");
+    attack[5] = load_image( "Personaje/Battle06.png");
+    attack[6] = load_image( "Personaje/Battle07.png");
+    attack[7] = load_image( "Personaje/Battle08.png");
+    attack[8] = load_image( "Personaje/Battle09.png");
+    attack[9] = load_image( "Personaje/Battle10.png");
+    attack[10] = load_image( "Personaje/Battle11.png");
+    attack[11] = load_image( "Personaje/Battle12.png");
+    attack[12] = load_image( "Personaje/Battle13.png");
+    attack[13] = load_image( "Personaje/Battle14.png");
+		
+    bool avanzando = true;
+    int i = 0;
+    int j = 0;
+    int x_personaje = 500;
+    int y_personaje = 450;
+    int direccion_actual = 50;
+
+    while(true)
+    {
+         while(  SDL_PollEvent( &event ))
+        {
+
+        }
+
+        Uint8 *keystates = SDL_GetKeyState( NULL );
+
+        apply_surface( 0, 0, image, screen );
+
+        //Si J incrementa a 3 se reinicia a 0 y comienza a leer el arreglo desde la posicion 0
+        if(j > 3)
+        {
+            j= 0;
+        }
+
+        //Mover a la Derecha
+        if(keystates [SDLK_RIGHT])
+        {
+            x_personaje+=20;
+            apply_surface( x_personaje, y_personaje, walkrigth[j], screen );
+            j++;
+            direccion_actual = 0;
+            if(keystates [ SDLK_LSHIFT])
+            {
+                x_personaje+=30;
+            }
+        }
+
+        //Mover a la izquierda
+        else if(keystates [SDLK_LEFT])
+        {
+            x_personaje-=20;
+            apply_surface( x_personaje, y_personaje, walkleft[j], screen );
+            j++;
+            direccion_actual = 1;
+            if(keystates [ SDLK_LSHIFT])
+            {
+                x_personaje-=30;
+            }
+        }
+
+        //Mover Arriba
+        else if(keystates [SDLK_UP])
+        {
+            y_personaje-=20;
+            apply_surface( x_personaje, y_personaje, walkup[j], screen );
+            j++;
+            direccion_actual = 2;
+            if(keystates [ SDLK_LSHIFT])
+            {
+                y_personaje-=30;
+            }
+        }
+
+        //Mover Abajo
+        else if(keystates [SDLK_DOWN])
+        {
+            y_personaje+=20;
+            apply_surface( x_personaje, y_personaje, walkdown[j], screen );
+            j++;
+            direccion_actual = 3;
+            if(keystates [ SDLK_LSHIFT])
+            {
+                y_personaje+=30;
+            }
+        }
+
+        else
+        {
+            if(direccion_actual == 50)
+            {
+                apply_surface( x_personaje, y_personaje, stand[3], screen );
+            }
+            if(direccion_actual == 0)
+            {
+                apply_surface( x_personaje, y_personaje, stand[0], screen );
+            }
+            if(direccion_actual == 1)
+            {
+                apply_surface( x_personaje, y_personaje, stand[1], screen );
+            }
+            if(direccion_actual == 2)
+            {
+                apply_surface( x_personaje, y_personaje, stand[3], screen );
+            }
+            if(direccion_actual == 3)
+            {
+                apply_surface( x_personaje, y_personaje, stand[2], screen );
+            }
+        }
+
+        //Redibuja la pantalla
+        if( SDL_Flip( screen ) == -1 )
+        {
+            return 1;
+        }
+        //Retardo para carga de las imagenes
+        SDL_Delay(150);
+
+    }
+
+
+    return 0;
+}
